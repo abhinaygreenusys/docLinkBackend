@@ -167,7 +167,7 @@ routes.verifyAccount = async (req, res) => {
       data: {},
     });
 
-    patient.readNotifications.push([notificationRes._id]), await patient.save();
+    patient.unReadNotifications.push([notificationRes._id]), await patient.save();
 
     const token = jwt.sign({ id: patient._id }, process.env.JWT_KEY, {
       expiresIn: "1d",

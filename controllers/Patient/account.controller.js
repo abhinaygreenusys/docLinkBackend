@@ -31,6 +31,8 @@ routes.register = async (req, res) => {
       return res.status(400).json({ error: "DeviceToken Is Required" });
     }
 
+
+
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -136,7 +138,8 @@ routes.verifyAccount = async (req, res) => {
 
     if (!patient) return res.status(404).json({ error: "Account not found" });
 
-    if (!patient.deviceToken) console.log("device Token is required");
+    if (!patient.deviceToken) 
+            console.log("device Token is required");
 
     if (patient.isVerifiy)
       return res.status(400).json({ error: "Account already verified" });
@@ -159,12 +162,12 @@ routes.verifyAccount = async (req, res) => {
     // });
 
     const notificationRes = await NotificationModel.create({
-      body: {
+      body:{
         type: "Registered",
         message: notificationMessage,
         data: {},
-        isRead: true,
-      },
+        isRead:true
+      }
     });
 
     patient.readNotifications.push([notificationRes._id]), await patient.save();
@@ -182,12 +185,10 @@ routes.verifyAccount = async (req, res) => {
     );
 
     const notify = await sendNotification({
-      body: {
-        type: "Resistered",
-        message: notificationMessage,
-        data: {},
-        deviceToken: patient.deviceToken,
-      },
+      type: "Resistered",
+      body: notificationMessage,
+      data: {},
+      deviceToken: patient.deviceToken,
     });
 
     res
@@ -314,15 +315,11 @@ routes.refreshAccessToken = async (req, res) => {
 routes.updateDeviceToken = async (req, res) => {
   const { id } = req.params;
   const { deviceToken } = req.body;
-  console.log(deviceToken);
+  console.log(deviceToken)
   // console.log(deviceToken)
-  const patient = await PatientModel.findByIdAndUpdate(
-    id,
-    { deviceToken: deviceToken },
-    { new: true }
-  );
+  const patient = await PatientModel.findByIdAndUpdate(id,{deviceToken:deviceToken},{new:true});
   if (!patient) return res.status(404).send({ error: "!patient not found" });
-  console.log(patient);
+  console.log(patient)
   // patient.deviceToken = deviceToken;
   // const data=await patient.save();
   res.status("200").json(patient);

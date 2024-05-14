@@ -27,9 +27,9 @@ routes.register = async (req, res) => {
       else return res.status(400).json({ error: "Account already exists" });
     }
 
-    // if (!deviceToken) {
-    //   return res.status(400).json({ error: "DeviceToken Is Required" });
-    // }
+    if (!deviceToken) {
+      return res.status(400).json({ error: "DeviceToken Is Required" });
+    }
 
 
 
@@ -137,7 +137,8 @@ routes.verifyAccount = async (req, res) => {
 
     if (!patient) return res.status(404).json({ error: "Account not found" });
 
-    if (!patient.deviceToken) return;
+    if (!patient.deviceToken) 
+            console.log("device Token is required");
 
     if (patient.isVerifiy)
       return res.status(400).json({ error: "Account already verified" });

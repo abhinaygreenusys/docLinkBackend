@@ -84,19 +84,24 @@ routes.addPrescription = async (req, res) => {
     const notificationMessage = "New Prescriptions Add ";
 
     const notify = await sendNotification({
-      type: "prescriptions",
-      typeId:prescription?._id,
-      body: notificationMessage,
-      data: data,
-      deviceToken: user.deviceToken
+      body:{
+        type: "prescriptions",
+        typeId:prescription?._id,
+        message: notificationMessage,
+        data: data,
+        deviceToken: user.deviceToken
+      }
     });
 
     const notificationRes = await NotificationModel.create({
-      type: "prescriptions",
-      typeId:prescription?._id,
-      body: notificationMessage,
-      data: data,
-    });
+      body:{
+        type: "prescriptions",
+        typeId:prescription?._id,
+        message: notificationMessage,
+        data: data,
+      }
+    }
+    );
 
     user.unReadNotifications.push(notificationRes._id);
     // user.cronJobs.push();

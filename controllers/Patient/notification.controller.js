@@ -41,8 +41,6 @@ routes.updateNotification = async (req, res) => {
     readNotifications: 1,
     unReadNotifications: 1,
   });
-  
-
   const notification = patient.unReadNotifications.find(
     (unReadNotification) => unReadNotification._id.toString() === notificationId
   );

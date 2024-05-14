@@ -2,6 +2,7 @@ const patientPrescriptionsModel = require("../../models/PatientPrescriptions.mod
 const patientModel = require("../../models/Patient.model");
 const NotificationModel = require("../../models/Notification.model");
 const cronJobModel = require("../../models/cronJob.model");
+const sendNotification = require("../../utils/sendNotification.utils");
 const routes = {};
 
 routes.getPatientPastPrescriptions = async (req, res) => {
@@ -48,35 +49,35 @@ routes.addPrescription = async (req, res) => {
       note,
     });
 
-    if (medicines) {
-      medicines.forEach(async (medicine) => {
-        const cronJob = await cronJobModel.create({
-          name: medicine?.name,
-          dosage: medicine?.dosage,
-        });
-        user.cronJobs.push(cronJob._id);  
-      });
-    }
-    if (exercises) {
-      exercises.forEach(async (exercise) => {
-        const cronJob = await cronJobModel.create({
-          name: exercise?.name,
-          instructions: exercise?.instructions,
-          partOfDay: exercise?.partOfDay,
-        });
-        user.cronJobs.push(cronJob._id);  
-      });
-    }
+    // if (medicines) {
+    //   medicines.forEach(async (medicine) => {
+    //     const cronJob = await cronJobModel.create({
+    //       name: medicine?.name,
+    //       dosage: medicine?.dosage,
+    //     });
+    //     user.cronJobs.push(cronJob._id);  
+    //   });
+    // }
+    // if (exercises) {
+    //   exercises.forEach(async (exercise) => {
+    //     const cronJob = await cronJobModel.create({
+    //       name: exercise?.name,
+    //       instructions: exercise?.instructions,
+    //       partOfDay: exercise?.partOfDay,
+    //     });
+    //     user.cronJobs.push(cronJob._id);  
+    //   });
+    // }
     
-    if (diet) {
-      diet.forEach(async (d) => {
-        const cronJob = await cronJobModel.create({
-          name: d?.name,
-          partOfDay: d?.partOfDay,
-        });
-        user.cronJobs.push(cronJob._id);  
-      });
-    }
+    // if (diet) {
+    //   diet.forEach(async (d) => {
+    //     const cronJob = await cronJobModel.create({
+    //       name: d?.name,
+    //       partOfDay: d?.partOfDay,
+    //     });
+    //     user.cronJobs.push(cronJob._id);  
+    //   });
+    // }
 
     user.prescriptions.push(prescription?._id);
 
@@ -86,7 +87,7 @@ routes.addPrescription = async (req, res) => {
       type: "prescriptions",
       body: notificationMessage,
       data: data,
-      fcmToken: "",
+      deviceToken: user.deviceToken
     });
 
     const notificationRes = await NotificationModel.create({
@@ -96,7 +97,7 @@ routes.addPrescription = async (req, res) => {
     });
 
     user.unReadNotifications.push(notificationRes._id);
-    user.cronJobs.push();
+    // user.cronJobs.push();
 
     await user.save();
 

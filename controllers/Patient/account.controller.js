@@ -74,6 +74,7 @@ routes.register = async (req, res) => {
       dob,
       phone,
       verificcationCode: otp,
+      deviceToken,
       codeExpire: expressTime,
     });
 

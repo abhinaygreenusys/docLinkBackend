@@ -165,6 +165,7 @@ routes.verifyAccount = async (req, res) => {
       type: "Registered",
       body: notificationMessage,
       data: {},
+      isRead:true
     });
 
     patient.unReadNotifications.push([notificationRes._id]), await patient.save();
@@ -182,7 +183,7 @@ routes.verifyAccount = async (req, res) => {
     );
 
     const notify = await sendNotification({
-      type: "Resister title",
+      type: "Resistered",
       body: notificationMessage,
       data: {},
       deviceToken: patient.deviceToken,

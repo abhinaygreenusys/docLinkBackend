@@ -85,6 +85,7 @@ routes.addPrescription = async (req, res) => {
 
     const notify = await sendNotification({
       type: "prescriptions",
+      typeId:prescription?._id,
       body: notificationMessage,
       data: data,
       deviceToken: user.deviceToken
@@ -92,6 +93,7 @@ routes.addPrescription = async (req, res) => {
 
     const notificationRes = await NotificationModel.create({
       type: "prescriptions",
+      typeId:prescription?._id,
       body: notificationMessage,
       data: data,
     });

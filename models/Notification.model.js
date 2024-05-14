@@ -8,6 +8,10 @@ const NotificationSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  typeId: {
+    type:mongoose.Schema.Types.ObjectId,
+  },
+  
   body: {
     type: String,
     required: true

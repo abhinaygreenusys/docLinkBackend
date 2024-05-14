@@ -27,9 +27,11 @@ routes.register = async (req, res) => {
       else return res.status(400).json({ error: "Account already exists" });
     }
 
-    if (!deviceToken) {
-      return res.status(400).json({ error: "DeviceToken Is Required" });
-    }
+    // if (!deviceToken) {
+    //   return res.status(400).json({ error: "DeviceToken Is Required" });
+    // }
+
+    
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);

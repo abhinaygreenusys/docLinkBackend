@@ -8,12 +8,12 @@ const CronJobSchema = new mongoose.Schema({
   },
   tasks: {
     type: {
-      name: String,
-      dosage: String,
-      instructions: String,
-      partOfDay: String,
+      name: {type:String},
+      dosage: {type: String},
+      instructions: {type: String},
+      partOfDay: {type: String},
     },
-    required: true,
+    required:true
   },
   timestamp: {
     type: Date,

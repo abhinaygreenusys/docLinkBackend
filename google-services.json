@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "676696745628",
+    "project_id": "doclink-1072f",
+    "storage_bucket": "doclink-1072f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:676696745628:android:5e2e3899b8427ce1676f59",
+        "android_client_info": {
+          "package_name": "com.doctor.docLincApp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCpb-CM7ijHyX4Nt29lw06RNdMxlwwzdAk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

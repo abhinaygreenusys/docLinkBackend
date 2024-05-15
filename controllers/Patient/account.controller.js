@@ -134,10 +134,12 @@ routes.register = async (req, res) => {
 
 
 routes.login = async (req, res) => {
+  console.log("login")
   try {
     const { email, password, deviceToken } = req.body;
 
     const patient = await patientModel.findOne({ email });
+    console.log(patient)
 
     if (!patient) return res.status(404).json({ error: "Account not found" });
 
@@ -147,21 +149,23 @@ routes.login = async (req, res) => {
     const validPassword = await bcrypt.compare(password, patient.password);
     if (!validPassword)
       return res.status(400).json({ error: "Invalid password" });
-
-    patient.deviceToken = deviceToken;
+    if(deviceToken){
+      patient.deviceToken = deviceToken;
+    }
     const logInPatient =await (await patient.save()).populate("cronJobs");
 
     console.log(logInPatient);
+    console.log("logInPatient=", patient?.cronJobs);
 
 
-    patient?.cronJobs?.forEach((cronJob) => {
-      console.log("cronJob=",cronJob);
-      createCronjob.createCronjob({
-        schedule: cronJob.schedule,
-        task: cronJob.tasks,
-        deviceToken:patient?.deviceToken,
-      });
-    });
+    // patient?.cronJobs?.forEach((cronJob) => {
+    //   console.log("cronJob=",cronJob);
+    //   createCronjob.createCronjob({
+    //     schedule: cronJob.schedule,
+    //     task: cronJob.tasks,
+    //     deviceToken:patient?.deviceToken,
+    //   });
+    // });
 
     const token = jwt.sign({ id: patient._id }, process.env.JWT_KEY, {
       expiresIn: "1d",
@@ -175,8 +179,6 @@ routes.login = async (req, res) => {
       }
     );
 
-    console.log(patient?.cronJobs.schedule);
-    console.log(patient?.cronJobs.tasks);
     console.log(patient?.deviceToken);
 
   
@@ -189,7 +191,7 @@ routes.login = async (req, res) => {
 
     res
       .status(200)
-      .json({ msg: "Logged in successfuly", result: { token, resfreshToken } });
+      .json({ msg: "Logged in successfuly", result: { token, resfreshToken, patient } });
   } catch (error) {
     console.log(error);
     res

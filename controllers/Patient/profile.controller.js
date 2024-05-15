@@ -1,6 +1,7 @@
 const bcrypt = require("bcryptjs");
-
+const cron=require("node-cron");
 const patientModel = require("../../models/Patient.model");
+const { createCronjob } = require("../../utils/cronJobs.utils");
 
 const routes = {};
 
@@ -90,10 +91,17 @@ routes.updateDeviceToken = async (req, res) => {
 
 routes.logOut = async (req, res) => {
   const {patientId}=req;
-  const patient=await patientModel.findById(patientId);
-  patient.deviceToken=null;
-  await patient.save();
-  createCronjob.removeCron();
+  console.log("logout=",patientId)
+  const patient=await patientModel.findById(patientId,{deviceToken:1}).populate("cronJobs");
+  const allCrons=cron.getTasks()
+    // console.log(allCrons);
+    allCrons.forEach((value,key)=>{
+      console.log(`${key} = ${value}`);
+    });
+  // patient.deviceToken=null;
+  console.log(patient);
+  res.status(200).json("logout"); 
+  // createCronjob.removeCron();
 };
 
 

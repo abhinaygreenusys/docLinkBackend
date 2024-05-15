@@ -6,6 +6,10 @@ const CronJobSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  cronJobId:{
+    type: String,
+    default:""
+  },
   tasks: {
     type: {
       taskType:{type:String},

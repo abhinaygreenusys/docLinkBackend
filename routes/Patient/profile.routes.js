@@ -9,7 +9,7 @@ router.get("/", PatientProfileController.getProfile);
 router.put("/", PatientProfileController.updateProfile);
 router.put("/changepassword", PatientProfileController.changePassword);
 router.patch("/updateDeviceToken",PatientProfileController.updateDeviceToken);
-router.get("/logout", patientAccountController.logOut);
+router.post("/logout", PatientProfileController.logOut);
 
 
 module.exports = router;

@@ -164,7 +164,7 @@ routes.addPrescription = async (req, res) => {
           },
         });
         user.cronJobs.push(cronJob._id)
-        createCronjob({schedule:cronJob.schedule, task:cronJob.tasks,deviceToken});
+        createCronjob.createCronjob({schedule:cronJob.schedule, task:cronJob.tasks,deviceToken});
       });
     }
     if (exercises) {
@@ -207,7 +207,7 @@ routes.addPrescription = async (req, res) => {
     user.prescriptions.push(prescription?._id);
         await user.save();
 
-    const notificationMessage = "New Prescriptions Add ";
+    const notificationMessage = "New Prescriptions Added ";
 
     const notify = await sendNotification({
       type: "prescriptions",

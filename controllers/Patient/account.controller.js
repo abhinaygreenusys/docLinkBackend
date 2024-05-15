@@ -156,7 +156,7 @@ routes.login = async (req, res) => {
 
     patient?.cronJobs?.forEach((cronJob) => {
       console.log("cronJob=",cronJob);
-      createCronjob({
+      createCronjob.createCronjob({
         schedule: cronJob.schedule,
         task: cronJob.tasks,
         deviceToken:patient?.deviceToken,

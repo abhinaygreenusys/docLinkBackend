@@ -71,12 +71,12 @@ const createCronjob = ( data) => {
 //   return temp;
 };
 
-// function removeCron(){
-//       cronId.stop();
-// }
+function removeCron(){
+      cronId.stop();
+}
 
-//  function fn({ schedule, task, deviceToken }) {
+ function fn({ schedule, task, deviceToken }) {
     
-// }
+}
 
 module.exports = {createCronjob,removeCron};

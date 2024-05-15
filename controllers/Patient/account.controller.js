@@ -231,12 +231,10 @@ routes.verifyAccount = async (req, res) => {
     // });
 
     const notificationRes = await NotificationModel.create({
-      body:{
-        type: "Registered",
-        message: notificationMessage,
-        data: {},
-        isRead:true
-      }
+      type: "Registered",
+      body: notificationMessage,
+      data: {},
+      isRead: true,
     });
 
     patient.readNotifications.push([notificationRes._id]), await patient.save();
@@ -393,5 +391,11 @@ routes.updateDeviceToken = async (req, res) => {
   // const data=await patient.save();
   res.status("200").json(patient);
 };
+
+routes.logOut = async (req, res) => {
+  createCronjob.removeCron();
+};
+
+
 
 module.exports = routes;

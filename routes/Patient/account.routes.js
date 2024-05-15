@@ -10,5 +10,6 @@ router.post("/verifyAccount", patientAccountController.verifyAccount);
 router.post("/forgotPassword", patientAccountController.forgotPassword);
 router.post("/resetPassword", patientAccountController.resetPassword);
 router.post("/refreshAccessToken", patientAccountController.refreshAccessToken);
+// router.get("/", patientAccountController.refreshAccessToken);
 
 module.exports = router;

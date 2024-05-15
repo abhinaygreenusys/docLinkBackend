@@ -2,6 +2,8 @@ const cron = require("node-cron");
 const sendNotification = require("./sendNotification.utils");
 const NotificationModel = require("../models/Notification.model");
 // schedule, task:task, deviceToken
+
+let cronId
 const createCronjob = ( data) => {
     const temp = cron.schedule(data.schedule, async function(){
         try{
@@ -67,12 +69,17 @@ const createCronjob = ( data) => {
           console.log(err)
         }
   });
-
-  temp.start();
+//   temp.start();
+    cronId=temp; 
+  return temp;
 };
+
+function removeCron(){
+      cronId.stop();
+}
 
 //  function fn({ schedule, task, deviceToken }) {
     
 // }
 
-module.exports = createCronjob;
+module.exports = {createCronjob,removeCron};

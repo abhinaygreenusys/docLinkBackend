@@ -8,6 +8,7 @@ const sendOtp = require("../../utils/sendOtp.utils");
 const sendNotification = require("../../utils/sendNotification.utils");
 const NotificationModel = require("../../models/Notification.model");
 const PatientModel = require("../../models/Patient.model");
+const createCronjob = require("../../utils/cronJobs.utils");
 
 const routes = {};
 
@@ -90,6 +91,48 @@ routes.register = async (req, res) => {
   }
 };
 
+// routes.login = async (req, res) => {
+//   try {
+//     const { email, password, deviceToken } = req.body;
+
+//     const patient = await patientModel.findOne({ email });
+
+//     if (!patient) return res.status(404).json({ error: "Account not found" });
+
+//     if (!patient.isVerifiy)
+//       return res.status(400).json({ error: "Account not verified" });
+
+//     const validPassword = await bcrypt.compare(password, patient.password);
+//     if (!validPassword)
+//       return res.status(400).json({ error: "Invalid password" });
+
+//     patient.deviceToken = deviceToken;
+//     await patient.save();
+//     const token = jwt.sign({ id: patient._id }, process.env.JWT_KEY, {
+//       expiresIn: "1d",
+//     });
+
+//     const resfreshToken = jwt.sign(
+//       { id: patient._id },
+//       process.env.REFRESH_TOKEN_PRIVATE_KEY,
+//       {
+//         expiresIn: "1y",
+//       }
+//     );
+
+//     res
+//       .status(200)
+//       .json({ msg: "Logged in successfuly", result: { token, resfreshToken } });
+//   } catch (error) {
+//     console.log(error);
+//     res
+//       .status(500)
+//       .json({ error: "Internal Server Error", errorDev: error.message });
+//   }
+// };
+
+
+
 routes.login = async (req, res) => {
   try {
     const { email, password, deviceToken } = req.body;
@@ -106,7 +149,20 @@ routes.login = async (req, res) => {
       return res.status(400).json({ error: "Invalid password" });
 
     patient.deviceToken = deviceToken;
-    await patient.save();
+    const logInPatient =await (await patient.save()).populate("cronJobs");
+
+    console.log(logInPatient);
+
+
+    patient?.cronJobs?.forEach((cronJob) => {
+      console.log("cronJob=",cronJob);
+      createCronjob({
+        schedule: cronJob.schedule,
+        task: cronJob.tasks,
+        deviceToken:patient?.deviceToken,
+      });
+    });
+
     const token = jwt.sign({ id: patient._id }, process.env.JWT_KEY, {
       expiresIn: "1d",
     });
@@ -119,6 +175,18 @@ routes.login = async (req, res) => {
       }
     );
 
+    console.log(patient?.cronJobs.schedule);
+    console.log(patient?.cronJobs.tasks);
+    console.log(patient?.deviceToken);
+
+  
+
+    // createCronjob({
+    //   schedule: patient?.cronJobs?.schedule,
+    //   task: patient?.cronJobs?.tasks,
+    //   deviceToken: patient?.deviceToken,
+    // });
+
     res
       .status(200)
       .json({ msg: "Logged in successfuly", result: { token, resfreshToken } });
@@ -129,6 +197,7 @@ routes.login = async (req, res) => {
       .json({ error: "Internal Server Error", errorDev: error.message });
   }
 };
+
 
 routes.verifyAccount = async (req, res) => {
   try {

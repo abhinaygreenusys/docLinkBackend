@@ -87,4 +87,14 @@ routes.updateDeviceToken = async (req, res) => {
   res.status("200").json(patient);
 };
 
+
+routes.logOut = async (req, res) => {
+  const {patientId}=req;
+  const patient=await patientModel.findById(patientId);
+  patient.deviceToken=null;
+  await patient.save();
+  createCronjob.removeCron();
+};
+
+
 module.exports = routes;

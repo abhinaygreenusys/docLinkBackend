@@ -58,10 +58,7 @@ const createCronjob = ( data) => {
             typeId: data?.task?.prescription,
             body: message,
             data:{},
-          });
-
-          
-          
+          }); 
           console.log("diet");
         }
         console.log("cron started");
@@ -69,14 +66,14 @@ const createCronjob = ( data) => {
           console.log(err)
         }
   });
-//   temp.start();
-    cronId=temp; 
-  return temp;
+  temp.start();
+    // cronId=temp; 
+//   return temp;
 };
 
-function removeCron(){
-      cronId.stop();
-}
+// function removeCron(){
+//       cronId.stop();
+// }
 
 //  function fn({ schedule, task, deviceToken }) {
     

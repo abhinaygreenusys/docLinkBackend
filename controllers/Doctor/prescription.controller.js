@@ -180,8 +180,8 @@ routes.addPrescription = async (req, res) => {
           },
         });
         user.cronJobs.push(cronJob._id)
-        
-        createCronjob({schedule:cronJob.schedule, task:cronJob.tasks,deviceToken});
+        createCronjob.createCronjob({schedule:cronJob.schedule, task:cronJob.tasks,deviceToken});
+
 
       });
     }
@@ -199,8 +199,7 @@ routes.addPrescription = async (req, res) => {
         });
         user.cronJobs.push(cronJob._id)
        
-        createCronjob({schedule:cronJob.schedule, task:cronJob.tasks,deviceToken});
-      
+        createCronjob.createCronjob({schedule:cronJob.schedule, task:cronJob.tasks,deviceToken});
       });
     }
 

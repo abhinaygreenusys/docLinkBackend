@@ -392,9 +392,7 @@ routes.updateDeviceToken = async (req, res) => {
   res.status("200").json(patient);
 };
 
-routes.logOut = async (req, res) => {
-  createCronjob.removeCron();
-};
+
 
 
 

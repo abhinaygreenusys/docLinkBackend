@@ -15,6 +15,9 @@ const sendNotification = async(data) => {
     to:data.deviceToken,
   };
 
+  
+  
+  
   fcm.send(message, function (err, response) {
     if (err){
       console.log("err=",err);

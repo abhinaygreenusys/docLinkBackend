@@ -151,7 +151,7 @@ routes.login = async (req, res) => {
     }
     const logInPatient = await patient.save();
 
-
+     if(patient.cronJobs){
     const updatedCronJobs = [];
     for (const cronJobId of patient.cronJobs) {
       const job = await cronJobModel.findOne({ cronJobId });
@@ -165,9 +165,10 @@ routes.login = async (req, res) => {
       console.log("id", id);
       updatedCronJobs.push(id);
     }
-
     patient.cronJobs = updatedCronJobs;
     await patient.save();
+  }
+
 
     const token = jwt.sign({ id: patient._id }, process.env.JWT_KEY, {
       expiresIn: "1d",

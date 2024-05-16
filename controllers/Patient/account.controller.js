@@ -165,7 +165,7 @@ routes.login = async (req, res) => {
         const id = await createCronjob.createCronjob({
           schedule: job.schedule,
           task: job.tasks,
-          deviceToken: patient.deviceToken,
+          deviceToken,
         });
         console.log("id", id);
         updatedCronJobs.push(id);

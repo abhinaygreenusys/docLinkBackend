@@ -155,6 +155,7 @@ routes.login = async (req, res) => {
     const updatedCronJobs = [];
     for (const cronJobId of patient.cronJobs) {
       const job = await cronJobModel.findOne({ cronJobId });
+      if(!job) break;
       console.log("job=", job);
       console.log("cronJob=", cronJobId);
       const id = await createCronjob.createCronjob({

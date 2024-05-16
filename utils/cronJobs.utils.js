@@ -32,40 +32,58 @@ const createCronjob =( data) => {
         } else if (data?.task?.taskType === "exercise") {
            message = `It's time for your ${data?.task?.name} exercise `;
            taskType=data?.task?.taskType;
-          const notify = await sendNotification({
-            type: data?.task?.taskType,
-            body: message,
-            data: {},
-            deviceToken:data?.deviceToken,
-          });
+          // const notify = await sendNotification({
+          //   type: data?.task?.taskType,
+          //   body: message,
+          //   data: {},
+          //   deviceToken:data?.deviceToken,
+          // });
 
-          const notificationRes = await NotificationModel.create({
-            type: data?.task?.taskType,
-            typeId: data?.task?.prescription,
-            body: message,
-            data:{},
-          });
+          // const notificationRes = await NotificationModel.create({
+          //   type: data?.task?.taskType,
+          //   typeId: data?.task?.prescription,
+          //   body: message,
+          //   data:{},
+          // });
 
-          console.log(message);
+          // console.log(message);
         } else if (data?.task?.taskType === "diet") {
-          const message = `Please follow the diet ${data?.task?.name} in ${data?.task?.partOfDay}`;
+           message = `Please follow the diet ${data?.task?.name} in ${data?.task?.partOfDay}`;
+           taskType=data?.task?.taskType;
           
-          
+          // const notify = await sendNotification({
+          //   type: data?.task?.taskType,
+          //   body: message,
+          //   data: {},
+          //   deviceToken:data?.deviceToken,
+          // });
+
+          // const notificationRes = await NotificationModel.create({
+          //   type: data?.task?.taskType,
+          //   typeId: data?.task?.prescription,
+          //   body: message,
+          //   data:{},
+          // }); 
+          // console.log(message);
+        }
+
           const notify = await sendNotification({
-            type: data?.task?.taskType,
+            type:taskType,
             body: message,
             data: {},
             deviceToken:data?.deviceToken,
           });
 
-          const notificationRes = await NotificationModel.create({
-            type: data?.task?.taskType,
+
+            const notificationRes = await NotificationModel.create({
+            type: taskType,
             typeId: data?.task?.prescription,
             body: message,
             data:{},
           }); 
           console.log(message);
-        }
+
+
 
         console.log("cron started");
 

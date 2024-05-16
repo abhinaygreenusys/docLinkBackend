@@ -96,10 +96,6 @@ function stopCron(cronJobs){
     // console.log("all task=",key, value); 
   }
 }
- function apdateCronJobByPatients(patients,newJobId) {
+ 
 
-           
-        
-}
-
-module.exports = {createCronjob,stopCron,apdateCronJobByPatients};
+module.exports = {createCronjob,stopCron};

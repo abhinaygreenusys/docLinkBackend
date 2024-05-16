@@ -147,11 +147,13 @@ routes.login = async (req, res) => {
 
     const validPassword = await bcrypt.compare(password, patient.password);
     if (!validPassword)
-      return res.status(400).json({ error: "Invalid password" });
+         return res.status(400).json({ error: "Invalid password" });
     if (deviceToken) {
       patient.deviceToken = deviceToken;
     }
     const logInPatient = await patient.save();
+
+    createCronjob.stopCron(patient.cronJobs)
 
     if (patient.cronJobs) {
       const updatedCronJobs = [];

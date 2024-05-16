@@ -97,6 +97,8 @@ routes.logOut = async (req, res) => {
   console.log("patient=",patient)
   
 
+  patient.deviceToken=null;
+      await patient.save();
      stopCron(patient.cronJobs);
   console.log(patient);
   res.status(200).json("logout"); 

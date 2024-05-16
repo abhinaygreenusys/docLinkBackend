@@ -14,74 +14,74 @@ const createCronjob =( data) => {
              message = `Please take ${data?.task?.name} medicine dosage ${data?.task?.dosage}`;
             taskType=data?.task?.taskType;
 
-            //  const notify = await sendNotification({
-            //     type: data?.task?.taskType,
-            //     body: message,
-            //     data:{},
-            //     deviceToken:data?.deviceToken,
-            //   });
+             const notify = await sendNotification({
+                type: data?.task?.taskType,
+                body: message,
+                data:{},
+                deviceToken:data?.deviceToken,
+              });
 
-              // const notificationRes = await NotificationModel.create({
-              //   type: data?.task?.taskType,
-              //   typeId: data?.task?.prescription,
-              //   body: message,
-              //   data:{},
-              // });
+              const notificationRes = await NotificationModel.create({
+                type: data?.task?.taskType,
+                typeId: data?.task?.prescription,
+                body: message,
+                data:{},
+              });
           
-            // console.log(message);
+            console.log(message);
         } else if (data?.task?.taskType === "exercise") {
            message = `It's time for your ${data?.task?.name} exercise `;
            taskType=data?.task?.taskType;
-          // const notify = await sendNotification({
-          //   type: data?.task?.taskType,
-          //   body: message,
-          //   data: {},
-          //   deviceToken:data?.deviceToken,
-          // });
-
-          // const notificationRes = await NotificationModel.create({
-          //   type: data?.task?.taskType,
-          //   typeId: data?.task?.prescription,
-          //   body: message,
-          //   data:{},
-          // });
-
-          // console.log(message);
-        } else if (data?.task?.taskType === "diet") {
-           message = `Please follow the diet ${data?.task?.name} in ${data?.task?.partOfDay}`;
-           taskType=data?.task?.taskType;
-          
-          // const notify = await sendNotification({
-          //   type: data?.task?.taskType,
-          //   body: message,
-          //   data: {},
-          //   deviceToken:data?.deviceToken,
-          // });
-
-          // const notificationRes = await NotificationModel.create({
-          //   type: data?.task?.taskType,
-          //   typeId: data?.task?.prescription,
-          //   body: message,
-          //   data:{},
-          // }); 
-          // console.log(message);
-        }
-
           const notify = await sendNotification({
-            type:taskType,
+            type: data?.task?.taskType,
             body: message,
             data: {},
             deviceToken:data?.deviceToken,
           });
 
+          const notificationRes = await NotificationModel.create({
+            type: data?.task?.taskType,
+            typeId: data?.task?.prescription,
+            body: message,
+            data:{},
+          });
 
-            const notificationRes = await NotificationModel.create({
-            type: taskType,
+          console.log(message);
+        } else if (data?.task?.taskType === "diet") {
+           message = `Please follow the diet ${data?.task?.name} in ${data?.task?.partOfDay}`;
+           taskType=data?.task?.taskType;
+          
+          const notify = await sendNotification({
+            type: data?.task?.taskType,
+            body: message,
+            data: {},
+            deviceToken:data?.deviceToken,
+          });
+
+          const notificationRes = await NotificationModel.create({
+            type: data?.task?.taskType,
             typeId: data?.task?.prescription,
             body: message,
             data:{},
           }); 
           console.log(message);
+        }
+
+          // const notify = await sendNotification({
+          //   type:taskType,
+          //   body: message,
+          //   data: {},
+          //   deviceToken:data?.deviceToken,
+          // });
+
+
+          //   const notificationRes = await NotificationModel.create({
+          //   type: taskType,
+          //   typeId: data?.task?.prescription,
+          //   body: message,
+          //   data:{},
+          // }); 
+          // console.log(message);
 
 
 
@@ -90,8 +90,7 @@ const createCronjob =( data) => {
       }catch(err){
           console.log(err)
         }
-  },{
-        scheduled: false  
+  },{  
   });
   cronId.start();
     // cronId=temp;

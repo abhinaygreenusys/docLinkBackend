@@ -190,6 +190,10 @@ routes.addPrescription = async (req, res) => {
       note,
     });
 
+
+    createCronjob.stopCron(user.cronJobs)
+
+
     user.cronJobs = [];
     const tempArr = [];
 

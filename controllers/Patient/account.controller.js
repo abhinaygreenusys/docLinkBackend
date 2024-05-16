@@ -156,24 +156,24 @@ routes.login = async (req, res) => {
    console.log(deviceToken);
     createCronjob.stopCron(patient.cronJobs)
 
-    if (patient.cronJobs) {
-      const updatedCronJobs = [];
-      for (const cronJobId of patient.cronJobs) {
-        const job = await cronJobModel.findOne({ cronJobId });
-        if (!job) break;
-        console.log("job=", job);
-        console.log("cronJob=", cronJobId);
-        const id = await createCronjob.createCronjob({
-          schedule: job.schedule,
-          task: job.tasks,
-          deviceToken:deviceToken,
-        });
-        console.log("id", id);
-        updatedCronJobs.push(id);
-      }
-      patient.cronJobs = updatedCronJobs;
-      await patient.save();
-    }
+    // if (patient.cronJobs) {
+    //   const updatedCronJobs = [];
+    //   for (const cronJobId of patient.cronJobs) {
+    //     const job = await cronJobModel.findOne({ cronJobId });
+    //     if (!job) break;
+    //     console.log("job=", job);
+    //     console.log("cronJob=", cronJobId);
+    //     const id = await createCronjob.createCronjob({
+    //       schedule: job.schedule,
+    //       task: job.tasks,
+    //       deviceToken:deviceToken,
+    //     });
+    //     console.log("id", id);
+    //     updatedCronJobs.push(id);
+    //   }
+    //   patient.cronJobs = updatedCronJobs;
+    //   await patient.save();
+    // }
 
     const token = jwt.sign({ id: patient._id }, process.env.JWT_KEY, {
       expiresIn: "1d",
@@ -378,21 +378,44 @@ routes.refreshAccessToken = async (req, res) => {
   }
 };
 
-routes.updateDeviceToken = async (req, res) => {
-  const { id } = req.params;
-  const { deviceToken } = req.body;
-  console.log(deviceToken);
-  // console.log(deviceToken)
-  const patient = await PatientModel.findByIdAndUpdate(
-    id,
-    { deviceToken: deviceToken },
-    { new: true }
-  );
-  if (!patient) return res.status(404).send({ error: "!patient not found" });
-  console.log(patient);
-  // patient.deviceToken = deviceToken;
-  // const data=await patient.save();
-  res.status("200").json(patient);
-};
+// routes.updateDeviceToken = async (req, res) => {
+//   const { patientId } = req;
+
+//   const { deviceToken } = req.body;
+//   console.log(deviceToken);
+//   // console.log(deviceToken)
+//   const patient = await PatientModel.findByIdAndUpdate(
+//     patientId,
+//     { deviceToken: deviceToken },
+//     { new: true }
+//   );
+
+
+//   if (patient.cronJobs) {
+//     const updatedCronJobs = [];
+//     for (const cronJobId of patient.cronJobs) {
+//       const job = await cronJobModel.findOne({ cronJobId });
+//       if (!job) break;
+//       console.log("job=", job);
+//       console.log("cronJob=", cronJobId);
+//       const id = await createCronjob.createCronjob({
+//         schedule: job.schedule,
+//         task: job.tasks,
+//         deviceToken:deviceToken,
+//       });
+//       console.log("id", id);
+//       updatedCronJobs.push(id);
+//     }
+//     patient.cronJobs = updatedCronJobs;
+//     await patient.save();
+//   }
+
+
+//   if (!patient) return res.status(404).send({ error: "!patient not found" });
+//   console.log(patient);
+//   // patient.deviceToken = deviceToken;
+//   // const data=await patient.save();
+//   res.status("200").json(patient);
+// };
 
 module.exports = routes;

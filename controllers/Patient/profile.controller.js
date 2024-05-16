@@ -2,6 +2,7 @@ const bcrypt = require("bcryptjs");
 const cron=require("node-cron");
 const patientModel = require("../../models/Patient.model");
 const { createCronjob, stopCron } = require("../../utils/cronJobs.utils");
+const cronJobModel = require("../../models/cronJob.model");
 
 const routes = {};
 
@@ -84,6 +85,28 @@ routes.updateDeviceToken = async (req, res) => {
     { deviceToken: deviceToken },
     { new: true }
   );
+
+  if (patient.cronJobs) {
+        const updatedCronJobs = [];
+        for (const cronJobId of patient.cronJobs) {
+          const job = await cronJobModel.findOne({ cronJobId });
+          if (!job) break;
+          console.log("job=", job);
+          console.log("cronJob=", cronJobId);
+          const id = await createCronjob({
+            schedule: job.schedule,
+            task: job.tasks,
+            deviceToken:deviceToken,
+          });
+          console.log("id", id);
+          updatedCronJobs.push(id);
+        }
+        patient.cronJobs = updatedCronJobs;
+        await patient.save();
+      }
+    
+
+
   if (!patient) return res.status(404).send({ error: "!patient not found" });
   res.status("200").json(patient);
 };

@@ -136,6 +136,7 @@ routes.login = async (req, res) => {
   console.log("login");
   try {
     const { email, password, deviceToken } = req.body;
+    console.log("deviceToken=",deviceToken)
 
     const patient = await patientModel.findOne({ email });
     console.log(patient);

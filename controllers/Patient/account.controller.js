@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
+const cron = require("node-cron");
 
 const patientModel = require("../../models/Patient.model");
 
@@ -67,6 +68,7 @@ routes.register = async (req, res) => {
     // });
 
     // console.log(notificationRes);
+    
     const patient = await patientModel.create({
       name,
       email,
@@ -151,25 +153,24 @@ routes.login = async (req, res) => {
     }
     const logInPatient = await patient.save();
 
-     if(patient.cronJobs){
-    const updatedCronJobs = [];
-    for (const cronJobId of patient.cronJobs) {
-      const job = await cronJobModel.findOne({ cronJobId });
-      if(!job) break;
-      console.log("job=", job);
-      console.log("cronJob=", cronJobId);
-      const id = await createCronjob.createCronjob({
-        schedule: job.schedule,
-        task: job.tasks,
-        deviceToken: patient.deviceToken,
-      });
-      console.log("id", id);
-      updatedCronJobs.push(id);
+    if (patient.cronJobs) {
+      const updatedCronJobs = [];
+      for (const cronJobId of patient.cronJobs) {
+        const job = await cronJobModel.findOne({ cronJobId });
+        if (!job) break;
+        console.log("job=", job);
+        console.log("cronJob=", cronJobId);
+        const id = await createCronjob.createCronjob({
+          schedule: job.schedule,
+          task: job.tasks,
+          deviceToken: patient.deviceToken,
+        });
+        console.log("id", id);
+        updatedCronJobs.push(id);
+      }
+      patient.cronJobs = updatedCronJobs;
+      await patient.save();
     }
-    patient.cronJobs = updatedCronJobs;
-    await patient.save();
-  }
-
 
     const token = jwt.sign({ id: patient._id }, process.env.JWT_KEY, {
       expiresIn: "1d",
@@ -224,7 +225,6 @@ routes.verifyAccount = async (req, res) => {
     patient.isVerifiy = true;
 
     const notificationMessage = "User Registered Succesfully";
-
 
     const notificationRes = await NotificationModel.create({
       type: "Registered",

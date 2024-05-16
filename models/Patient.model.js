@@ -61,8 +61,8 @@ const PatientSchema = new mongoose.Schema(
     },
 
     cronJobs: {
-      type: [mongoose.Schema.Types.ObjectId],
-      ref: "CronJob",
+      type: [String],
+      // ref: "CronJob",
       default: [],
     },
     deviceToken: {

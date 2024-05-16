@@ -28,10 +28,13 @@ routes.getPatientPastPrescriptions = async (req, res) => {
   }
 };
 
+
+
 // routes.addPrescription = async (req, res) => {
 //   const id = req.params.id;
 //   try {
 //     const user = await patientModel.findById(id);
+//     const deviceToken = user.deviceToken;
 
 //     if (!user) {
 //       return res.status(404).json({ error: "Patient not found" });
@@ -50,58 +53,94 @@ routes.getPatientPastPrescriptions = async (req, res) => {
 //       note,
 //     });
 
+//     // user.cronJobs;
+
 //     if (medicines) {
 //       medicines.forEach(async (medicine) => {
-//         const cronJob = await cronJobModel.create({
-//           schedule: "* * * * * *",
-//           tasks:{
-//             name: medicine?.name,
-//             dosage: medicine?.dosage,
-//           }
+//         const cronModel = {
+//           schedule: "*/20 * * * * *",
+//           tasks: {
+//             prescription: prescription._id,
+//             taskType: "medicine",
+//             name: medicine.name,
+//             dosage: medicine.dosage,
+//           },
+//           cronJobId: "",
+//         };
+
+//         cronModel.cronJobId = createCronjob.createCronjob({
+//           schedule: cronModel.schedule,
+//           task: cronModel.tasks,
+//           deviceToken,
 //         });
+
+//         console.log("cronModel=", cronModel.cronJobId);
+
+//         const cronJob = await cronJobModel.create(cronModel);
 //         user.cronJobs.push(cronJob._id);
 //       });
-//       createCronjob(cronJob.schedule,cronJob.tasks);
 //     }
 //     if (exercises) {
 //       exercises.forEach(async (exercise) => {
-//         const cronJob = await cronJobModel.create({
-//           schedule: "* * * * * *",
-//           tasks:{
-//            name: exercise?.name,
-//            instructions: exercise?.instructions,
-//            partOfDay: exercise?.partOfDay,
-//           }
+//         const cronModel = {
+//           schedule: "*/40 * * * * *",
+//           tasks: {
+//             prescription: prescription._id,
+//             taskType: "exercise",
+//             name: exercise?.name,
+//             instructions: exercise?.instructions,
+//             partOfDay: exercise?.partOfDay,
+//           },
+//           cronJobId: "",
+//         };
+
+//         cronModel.cronJobId = createCronjob.createCronjob({
+//           schedule: cronModel.schedule,
+//           task: cronModel.tasks,
+//           deviceToken,
 //         });
+
+//         const cronJob = await cronJobModel.create(cronModel);
 //         user.cronJobs.push(cronJob._id);
-//         createCronjob(cronJob.schedule,cronJob.tasks);
 //       });
 //     }
 
 //     if (diet) {
 //       diet.forEach(async (d) => {
-//         const cronJob = await cronJobModel.create({
-//           schedule: "* * * * * *",
-//           tasks:{
+//         const cronModel = {
+//           schedule: " */1 * * * *",
+//           tasks: {
+//             prescription: prescription._id,
+//             taskType: "diet",
 //             name: d?.name,
 //             partOfDay: d?.partOfDay,
-//           }
+//           },
+//           cronJobId: "",
+//         };
+
+//         cronModel.cronJobId = createCronjob.createCronjob({
+//           schedule: cronModel.schedule,
+//           task: cronModel.tasks,
+//           deviceToken,
 //         });
+
+//         const cronJob = await cronJobModel.create(cronModel);
 //         user.cronJobs.push(cronJob._id);
 //       });
 //     }
 
 //     user.prescriptions.push(prescription?._id);
+//     await user.save();
 
-//     const notificationMessage = "New Prescriptions Add ";
+//     const notificationMessage = "New Prescriptions Added ";
 
-//     const notify = await sendNotification({
-//       type: "prescriptions",
-//       typeId: prescription?._id,
-//       body: notificationMessage,
-//       data: data,
-//       deviceToken: user.deviceToken,
-//     });
+//     // const notify = await sendNotification({
+//     //   type: "prescriptions",
+//     //   typeId: prescription?._id,
+//     //   body: notificationMessage,
+//     //   data: data,
+//     //   deviceToken,
+//     // });
 
 //     const notificationRes = await NotificationModel.create({
 //       type: "prescriptions",
@@ -111,7 +150,6 @@ routes.getPatientPastPrescriptions = async (req, res) => {
 //     });
 
 //     user.unReadNotifications.push(notificationRes._id);
-//     // user.cronJobs.push();
 
 //     await user.save();
 
@@ -126,6 +164,8 @@ routes.getPatientPastPrescriptions = async (req, res) => {
 //     });
 //   }
 // };
+
+
 
 routes.addPrescription = async (req, res) => {
   const id = req.params.id;
@@ -150,7 +190,33 @@ routes.addPrescription = async (req, res) => {
       note,
     });
 
-    // user.cronJobs;
+    user.cronJobs = [];
+    const tempArr = [];
+
+    if (diet) {
+      diet.forEach(async (item) => {
+        const cronModel = {
+          schedule: "*/15 * * * * * *",
+          tasks: {
+            prescription: prescription._id,
+            taskType: "diet",
+            name: item?.name,
+            instructions: item?.instructions || null,
+            partOfDay: item?.partOfDay,
+          },
+          cronJobId: "",
+        };
+
+        cronModel.cronJobId = createCronjob.createCronjob({
+          schedule: cronModel.schedule,
+          task: cronModel.tasks,
+          deviceToken,
+        });
+
+        user.cronJobs.push( cronModel.cronJobId);
+        const cronJob = await cronJobModel.create(cronModel);
+      });
+    }
 
     if (medicines) {
       medicines.forEach(async (medicine) => {
@@ -171,12 +237,12 @@ routes.addPrescription = async (req, res) => {
           deviceToken,
         });
 
-        console.log("cronModel=", cronModel.cronJobId);
-
+        user.cronJobs.push( cronModel.cronJobId);
         const cronJob = await cronJobModel.create(cronModel);
-        user.cronJobs.push(cronJob._id);
+
       });
     }
+
     if (exercises) {
       exercises.forEach(async (exercise) => {
         const cronModel = {
@@ -196,48 +262,26 @@ routes.addPrescription = async (req, res) => {
           task: cronModel.tasks,
           deviceToken,
         });
-
+      
+        user.cronJobs.push( cronModel.cronJobId);
         const cronJob = await cronJobModel.create(cronModel);
-        user.cronJobs.push(cronJob._id);
-      });
-    }
 
-    if (diet) {
-      diet.forEach(async (d) => {
-        const cronModel = {
-          schedule: " */1 * * * *",
-          tasks: {
-            prescription: prescription._id,
-            taskType: "diet",
-            name: d?.name,
-            partOfDay: d?.partOfDay,
-          },
-          cronJobId: "",
-        };
-
-        cronModel.cronJobId = createCronjob.createCronjob({
-          schedule: cronModel.schedule,
-          task: cronModel.tasks,
-          deviceToken,
-        });
-
-        const cronJob = await cronJobModel.create(cronModel);
-        user.cronJobs.push(cronJob._id);
-      });
-    }
+    })
+  }
 
     user.prescriptions.push(prescription?._id);
     await user.save();
 
+
     const notificationMessage = "New Prescriptions Added ";
 
-    // const notify = await sendNotification({
-    //   type: "prescriptions",
-    //   typeId: prescription?._id,
-    //   body: notificationMessage,
-    //   data: data,
-    //   deviceToken,
-    // });
+    const notify = await sendNotification({
+      type: "prescriptions",
+      typeId: prescription?._id,
+      body: notificationMessage,
+      data: data,
+      deviceToken,
+    });
 
     const notificationRes = await NotificationModel.create({
       type: "prescriptions",
@@ -261,6 +305,10 @@ routes.addPrescription = async (req, res) => {
     });
   }
 };
+
+
+
+
 
 routes.prescriptionSuggestion = async (req, res) => {
   try {

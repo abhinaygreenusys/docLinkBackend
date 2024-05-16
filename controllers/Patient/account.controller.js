@@ -9,6 +9,7 @@ const sendNotification = require("../../utils/sendNotification.utils");
 const NotificationModel = require("../../models/Notification.model");
 const PatientModel = require("../../models/Patient.model");
 const createCronjob = require("../../utils/cronJobs.utils");
+const cronJobModel = require("../../models/cronJob.model");
 
 const routes = {};
 
@@ -31,8 +32,6 @@ routes.register = async (req, res) => {
     if (!deviceToken) {
       return res.status(400).json({ error: "DeviceToken Is Required" });
     }
-
-
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
@@ -131,15 +130,13 @@ routes.register = async (req, res) => {
 //   }
 // };
 
-
-
 routes.login = async (req, res) => {
-  console.log("login")
+  console.log("login");
   try {
     const { email, password, deviceToken } = req.body;
 
     const patient = await patientModel.findOne({ email });
-    console.log(patient)
+    console.log(patient);
 
     if (!patient) return res.status(404).json({ error: "Account not found" });
 
@@ -149,23 +146,28 @@ routes.login = async (req, res) => {
     const validPassword = await bcrypt.compare(password, patient.password);
     if (!validPassword)
       return res.status(400).json({ error: "Invalid password" });
-    if(deviceToken){
+    if (deviceToken) {
       patient.deviceToken = deviceToken;
     }
-    const logInPatient =await (await patient.save()).populate("cronJobs");
-
-    console.log(logInPatient);
-    console.log("logInPatient=", patient?.cronJobs);
+    const logInPatient = await patient.save();
 
 
-    // patient?.cronJobs?.forEach((cronJob) => {
-    //   console.log("cronJob=",cronJob);
-    //   createCronjob.createCronjob({
-    //     schedule: cronJob.schedule,
-    //     task: cronJob.tasks,
-    //     deviceToken:patient?.deviceToken,
-    //   });
-    // });
+    const updatedCronJobs = [];
+    for (const cronJobId of patient.cronJobs) {
+      const job = await cronJobModel.findOne({ cronJobId });
+      console.log("job=", job);
+      console.log("cronJob=", cronJobId);
+      const id = await createCronjob.createCronjob({
+        schedule: job.schedule,
+        task: job.tasks,
+        deviceToken: patient.deviceToken,
+      });
+      console.log("id", id);
+      updatedCronJobs.push(id);
+    }
+
+    patient.cronJobs = updatedCronJobs;
+    await patient.save();
 
     const token = jwt.sign({ id: patient._id }, process.env.JWT_KEY, {
       expiresIn: "1d",
@@ -181,8 +183,6 @@ routes.login = async (req, res) => {
 
     console.log(patient?.deviceToken);
 
-  
-
     // createCronjob({
     //   schedule: patient?.cronJobs?.schedule,
     //   task: patient?.cronJobs?.tasks,
@@ -191,7 +191,7 @@ routes.login = async (req, res) => {
 
     res
       .status(200)
-      .json({ msg: "Logged in successfuly", result: { token, resfreshToken, patient } });
+      .json({ msg: "Logged in successfuly", result: { token, resfreshToken } });
   } catch (error) {
     console.log(error);
     res
@@ -199,7 +199,6 @@ routes.login = async (req, res) => {
       .json({ error: "Internal Server Error", errorDev: error.message });
   }
 };
-
 
 routes.verifyAccount = async (req, res) => {
   try {
@@ -209,8 +208,7 @@ routes.verifyAccount = async (req, res) => {
 
     if (!patient) return res.status(404).json({ error: "Account not found" });
 
-    if (!patient.deviceToken) 
-            console.log("device Token is required");
+    if (!patient.deviceToken) console.log("device Token is required");
 
     if (patient.isVerifiy)
       return res.status(400).json({ error: "Account already verified" });
@@ -225,12 +223,6 @@ routes.verifyAccount = async (req, res) => {
 
     const notificationMessage = "User Registered Succesfully";
 
-    // const notify = await sendNotification({
-    //   type: "Resister title",
-    //   body: notificationMessage,
-    //   data:{},
-    //   fcmToken: "",
-    // });
 
     const notificationRes = await NotificationModel.create({
       type: "Registered",
@@ -384,18 +376,18 @@ routes.refreshAccessToken = async (req, res) => {
 routes.updateDeviceToken = async (req, res) => {
   const { id } = req.params;
   const { deviceToken } = req.body;
-  console.log(deviceToken)
+  console.log(deviceToken);
   // console.log(deviceToken)
-  const patient = await PatientModel.findByIdAndUpdate(id,{deviceToken:deviceToken},{new:true});
+  const patient = await PatientModel.findByIdAndUpdate(
+    id,
+    { deviceToken: deviceToken },
+    { new: true }
+  );
   if (!patient) return res.status(404).send({ error: "!patient not found" });
-  console.log(patient)
+  console.log(patient);
   // patient.deviceToken = deviceToken;
   // const data=await patient.save();
   res.status("200").json(patient);
 };
-
-
-
-
 
 module.exports = routes;

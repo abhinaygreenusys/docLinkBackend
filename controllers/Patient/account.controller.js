@@ -152,7 +152,7 @@ routes.login = async (req, res) => {
       patient.deviceToken = deviceToken;
     }
     const logInPatient = await patient.save();
-
+   console.log(deviceToken);
     createCronjob.stopCron(patient.cronJobs)
 
     if (patient.cronJobs) {
@@ -165,7 +165,7 @@ routes.login = async (req, res) => {
         const id = await createCronjob.createCronjob({
           schedule: job.schedule,
           task: job.tasks,
-          deviceToken,
+          deviceToken:deviceToken,
         });
         console.log("id", id);
         updatedCronJobs.push(id);

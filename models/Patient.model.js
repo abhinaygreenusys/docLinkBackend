@@ -33,6 +33,13 @@ const PatientSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    isPayment:{
+      type:Boolean,
+      default:false
+    },
+    paymentExpire:{
+       type:Date
+    },
     verificcationCode: {
       type: Number,
     },

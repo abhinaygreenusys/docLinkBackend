@@ -92,45 +92,6 @@ routes.register = async (req, res) => {
   }
 };
 
-// routes.login = async (req, res) => {
-//   try {
-//     const { email, password, deviceToken } = req.body;
-
-//     const patient = await patientModel.findOne({ email });
-
-//     if (!patient) return res.status(404).json({ error: "Account not found" });
-
-//     if (!patient.isVerifiy)
-//       return res.status(400).json({ error: "Account not verified" });
-
-//     const validPassword = await bcrypt.compare(password, patient.password);
-//     if (!validPassword)
-//       return res.status(400).json({ error: "Invalid password" });
-
-//     patient.deviceToken = deviceToken;
-//     await patient.save();
-//     const token = jwt.sign({ id: patient._id }, process.env.JWT_KEY, {
-//       expiresIn: "1d",
-//     });
-
-//     const resfreshToken = jwt.sign(
-//       { id: patient._id },
-//       process.env.REFRESH_TOKEN_PRIVATE_KEY,
-//       {
-//         expiresIn: "1y",
-//       }
-//     );
-
-//     res
-//       .status(200)
-//       .json({ msg: "Logged in successfuly", result: { token, resfreshToken } });
-//   } catch (error) {
-//     console.log(error);
-//     res
-//       .status(500)
-//       .json({ error: "Internal Server Error", errorDev: error.message });
-//   }
-// };
 
 routes.login = async (req, res) => {
   console.log("login");
@@ -156,25 +117,7 @@ routes.login = async (req, res) => {
    console.log(deviceToken);
     createCronjob.stopCron(patient.cronJobs)
 
-    // if (patient.cronJobs) {
-    //   const updatedCronJobs = [];
-    //   for (const cronJobId of patient.cronJobs) {
-    //     const job = await cronJobModel.findOne({ cronJobId });
-    //     if (!job) break;
-    //     console.log("job=", job);
-    //     console.log("cronJob=", cronJobId);
-    //     const id = await createCronjob.createCronjob({
-    //       schedule: job.schedule,
-    //       task: job.tasks,
-    //       deviceToken:deviceToken,
-    //     });
-    //     console.log("id", id);
-    //     updatedCronJobs.push(id);
-    //   }
-    //   patient.cronJobs = updatedCronJobs;
-    //   await patient.save();
-    // }
-
+   
     const token = jwt.sign({ id: patient._id }, process.env.JWT_KEY, {
       expiresIn: "1d",
     });
@@ -188,12 +131,6 @@ routes.login = async (req, res) => {
     );
 
     console.log(patient?.deviceToken);
-
-    // createCronjob({
-    //   schedule: patient?.cronJobs?.schedule,
-    //   task: patient?.cronJobs?.tasks,
-    //   deviceToken: patient?.deviceToken,
-    // });
 
     res
       .status(200)
@@ -378,44 +315,6 @@ routes.refreshAccessToken = async (req, res) => {
   }
 };
 
-// routes.updateDeviceToken = async (req, res) => {
-//   const { patientId } = req;
 
-//   const { deviceToken } = req.body;
-//   console.log(deviceToken);
-//   // console.log(deviceToken)
-//   const patient = await PatientModel.findByIdAndUpdate(
-//     patientId,
-//     { deviceToken: deviceToken },
-//     { new: true }
-//   );
-
-
-//   if (patient.cronJobs) {
-//     const updatedCronJobs = [];
-//     for (const cronJobId of patient.cronJobs) {
-//       const job = await cronJobModel.findOne({ cronJobId });
-//       if (!job) break;
-//       console.log("job=", job);
-//       console.log("cronJob=", cronJobId);
-//       const id = await createCronjob.createCronjob({
-//         schedule: job.schedule,
-//         task: job.tasks,
-//         deviceToken:deviceToken,
-//       });
-//       console.log("id", id);
-//       updatedCronJobs.push(id);
-//     }
-//     patient.cronJobs = updatedCronJobs;
-//     await patient.save();
-//   }
-
-
-//   if (!patient) return res.status(404).send({ error: "!patient not found" });
-//   console.log(patient);
-//   // patient.deviceToken = deviceToken;
-//   // const data=await patient.save();
-//   res.status("200").json(patient);
-// };
 
 module.exports = routes;

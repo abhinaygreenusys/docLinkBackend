@@ -14,6 +14,13 @@ routes.getProfile = async (req, res) => {
 
     if (!patient) return res.status(404).json({ error: "Patient not found" });
 
+      
+    if(new Date()<patient.paymentExpire){
+      console.log("if");
+      patient.isPayment=false;
+}
+     await patient.save();
+
     res.status(200).json({ result: patient });
   } catch (error) {
     console.log(error);
@@ -86,6 +93,11 @@ routes.updateDeviceToken = async (req, res) => {
     { new: true }
   );
 
+
+
+
+
+  
   if (patient.cronJobs) {
         const updatedCronJobs = [];
         for (const cronJobId of patient.cronJobs) {
@@ -110,7 +122,6 @@ routes.updateDeviceToken = async (req, res) => {
   if (!patient) return res.status(404).send({ error: "!patient not found" });
   res.status("200").json(patient);
 };
-
 
 
 routes.logOut = async (req, res) => {

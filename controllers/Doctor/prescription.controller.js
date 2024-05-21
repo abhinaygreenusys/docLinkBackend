@@ -177,9 +177,21 @@ routes.addPrescription = async (req, res) => {
       return res.status(404).json({ error: "Patient not found" });
     }
 
-    const { medicines, exercises, diet, refrainFrom, note, data } = req.body;
+    const { medicines, exercises, diet, refrainFrom, note, data,payment} = req.body;
 
     console.log(req.body);
+
+    if(payment){
+         user.isPayment=true;
+
+         const currentTime = new Date().getTime(); 
+const tenMinutesLater = currentTime + 1 * 60 * 1000; 
+
+const sevenDaysLater = tenMinutesLater + 7 * 24 * 60 * 60 * 1000; // Add 7 days in milliseconds
+
+const expireDate = new Date(sevenDaysLater);
+      user.paymentExpire= new Date(sevenDaysLater);
+    }
 
     const prescription = await patientPrescriptionsModel.create({
       user: id,
@@ -193,14 +205,13 @@ routes.addPrescription = async (req, res) => {
 
     createCronjob.stopCron(user.cronJobs)
 
-
     user.cronJobs = [];
     const tempArr = [];
 
     if (diet) {
       diet.forEach(async (item) => {
         const cronModel = {
-          schedule: "*/15 * * * * * *",
+          schedule: "*/25 * * * * * *",
           tasks: {
             prescription: prescription._id,
             taskType: "diet",
@@ -225,7 +236,7 @@ routes.addPrescription = async (req, res) => {
     if (medicines) {
       medicines.forEach(async (medicine) => {
         const cronModel = {
-          schedule: "*/20 * * * * *",
+          schedule: "*/35 * * * * *",
           tasks: {
             prescription: prescription._id,
             taskType: "medicine",
@@ -250,7 +261,7 @@ routes.addPrescription = async (req, res) => {
     if (exercises) {
       exercises.forEach(async (exercise) => {
         const cronModel = {
-          schedule: "*/40 * * * * *",
+          schedule: "*/45 * * * * *",
           tasks: {
             prescription: prescription._id,
             taskType: "exercise",

@@ -60,7 +60,7 @@ routes.lastPrescription = async (req, res) => {
       .findOne({ user: patientId })
       .sort({ createdAt: -1 })
       .limit(1);
-
+      
     if (!prescription) {
       return res.status(404).json({ error: "Prescription not found" });
     }

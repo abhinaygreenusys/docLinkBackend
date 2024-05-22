@@ -15,7 +15,7 @@ routes.getProfile = async (req, res) => {
     if (!patient) return res.status(404).json({ error: "Patient not found" });
 
       
-    if(new Date()<patient.paymentExpire){
+    if(new Date()>patient.paymentExpire){
       console.log("if");
       patient.isPayment=false;
 }

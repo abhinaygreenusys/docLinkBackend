@@ -66,27 +66,7 @@ const createCronjob =( data) => {
           }); 
           console.log(message);
         }
-
-          // const notify = await sendNotification({
-          //   type:taskType,
-          //   body: message,
-          //   data: {},
-          //   deviceToken:data?.deviceToken,
-          // });
-
-
-          //   const notificationRes = await NotificationModel.create({
-          //   type: taskType,
-          //   typeId: data?.task?.prescription,
-          //   body: message,
-          //   data:{},
-          // }); 
-          // console.log(message);
-
-
-
         console.log("cron started");
-
       }catch(err){
           console.log(err)
         }
@@ -103,7 +83,6 @@ return cronId?.options?.name;
 
 
 function stopCron(cronJobs){
-
   const allCrons=cron.getTasks()
   console.log(allCrons);
   for (const [key, value] of allCrons.entries()) {

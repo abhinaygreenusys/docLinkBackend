@@ -11,7 +11,6 @@ const NotificationSchema = new mongoose.Schema({
   typeId: {
     type:mongoose.Schema.Types.ObjectId,
   },
-  
   body: {
     type: String,
     required: true

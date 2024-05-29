@@ -4,6 +4,7 @@ const NotificationModel = require("../../models/Notification.model");
 const cronJobModel = require("../../models/cronJob.model");
 const sendNotification = require("../../utils/sendNotification.utils");
 const createCronjob = require("../../utils/cronJobs.utils");
+const { uploadFile } = require("../../utils/s3");
 const routes = {};
 
 routes.getPatientPastPrescriptions = async (req, res) => {
@@ -193,6 +194,24 @@ const expireDate = new Date(sevenDaysLater);
       user.paymentExpire= new Date(sevenDaysLater);
     }
 
+    // upload files on aws
+
+
+    let urls = [];
+    if (req.files) {
+      urls = await Promise.all(
+        req.files?.map(async (file) => {
+          const data = await uploadFile(
+            file,
+            `prescriptionFiles/${file.originalname}`
+          );
+          return data.Key;
+        })
+      );
+    }
+
+
+
     const prescription = await patientPrescriptionsModel.create({
       user: id,
       medicines,
@@ -200,6 +219,7 @@ const expireDate = new Date(sevenDaysLater);
       diet,
       refrainFrom,
       note,
+      files:urls
     });
 
 

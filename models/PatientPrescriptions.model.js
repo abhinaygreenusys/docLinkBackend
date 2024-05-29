@@ -62,6 +62,10 @@ const PatientPrescriptionsSchema = new mongoose.Schema(
     note: {
       type: String,
     },
+    files:{
+       type:Array,
+       default:[]
+    }
   },
   {
     timestamps: true,

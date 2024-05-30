@@ -173,16 +173,22 @@ routes.addPrescription = async (req, res) => {
   try {
     const user = await patientModel.findById(id);
     const deviceToken = user.deviceToken;
-
+  console.log("user=",user);
     if (!user) {
       return res.status(404).json({ error: "Patient not found" });
     }
 
-    const { medicines, exercises, diet, refrainFrom, note, data,payment} = req.body;
+    let {medicines, exercises, diet, refrainFrom, note, data,payment} = req.body;
+     
+    medicines=JSON.parse(medicines)
+    exercises=JSON.parse(exercises)
+    diet=JSON.parse(diet)
+    payment=JSON.parse(payment)
 
-    console.log(req.body);
+    console.log(medicines,exercises,diet);
 
-    if(payment){
+
+        if(payment){
          user.isPayment=true;
 
          const currentTime = new Date().getTime(); 

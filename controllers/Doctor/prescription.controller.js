@@ -5,6 +5,7 @@ const cronJobModel = require("../../models/cronJob.model");
 const sendNotification = require("../../utils/sendNotification.utils");
 const createCronjob = require("../../utils/cronJobs.utils");
 const { uploadFile } = require("../../utils/s3");
+const { v4: uuidv4 } = require("uuid");
 const routes = {};
 
 routes.getPatientPastPrescriptions = async (req, res) => {
@@ -28,8 +29,6 @@ routes.getPatientPastPrescriptions = async (req, res) => {
     });
   }
 };
-
-
 
 // routes.addPrescription = async (req, res) => {
 //   const id = req.params.id;
@@ -166,42 +165,39 @@ routes.getPatientPastPrescriptions = async (req, res) => {
 //   }
 // };
 
-
-
 routes.addPrescription = async (req, res) => {
   const id = req.params.id;
   try {
     const user = await patientModel.findById(id);
     const deviceToken = user.deviceToken;
-  console.log("user=",user);
+    console.log("user=", user);
     if (!user) {
       return res.status(404).json({ error: "Patient not found" });
     }
 
-    let {medicines, exercises, diet, refrainFrom, note, data,payment} = req.body;
-     
-    medicines=JSON.parse(medicines)
-    exercises=JSON.parse(exercises)
-    diet=JSON.parse(diet)
-    payment=JSON.parse(payment)
+    let { medicines, exercises, diet, refrainFrom, note, data, payment } =
+      req.body;
 
-    console.log(medicines,exercises,diet);
+    medicines = JSON.parse(medicines);
+    exercises = JSON.parse(exercises);
+    diet = JSON.parse(diet);
+    payment = JSON.parse(payment);
 
+    console.log(medicines, exercises, diet);
 
-        if(payment){
-         user.isPayment=true;
+    if (payment) {
+      user.isPayment = true;
 
-         const currentTime = new Date().getTime(); 
-const tenMinutesLater = currentTime + 1 * 60 * 1000; 
+      const currentTime = new Date().getTime();
+      const tenMinutesLater = currentTime + 1 * 60 * 1000;
 
-const sevenDaysLater = tenMinutesLater + 7 * 24 * 60 * 60 * 1000; // Add 7 days in milliseconds
+      const sevenDaysLater = tenMinutesLater + 7 * 24 * 60 * 60 * 1000; // Add 7 days in milliseconds
 
-const expireDate = new Date(sevenDaysLater);
-      user.paymentExpire= new Date(sevenDaysLater);
+      const expireDate = new Date(sevenDaysLater);
+      user.paymentExpire = new Date(sevenDaysLater);
     }
 
     // upload files on aws
-
 
     let urls = [];
     if (req.files) {
@@ -209,14 +205,12 @@ const expireDate = new Date(sevenDaysLater);
         req.files?.map(async (file) => {
           const data = await uploadFile(
             file,
-            `prescriptionFiles/${file.originalname}`
+            `prescriptionFiles/${uuidv4() + file.originalname}`
           );
           return data.Key;
         })
       );
     }
-
-
 
     const prescription = await patientPrescriptionsModel.create({
       user: id,
@@ -225,11 +219,10 @@ const expireDate = new Date(sevenDaysLater);
       diet,
       refrainFrom,
       note,
-      files:urls
+      files: urls,
     });
 
-
-    createCronjob.stopCron(user.cronJobs)
+    createCronjob.stopCron(user.cronJobs);
 
     user.cronJobs = [];
     const tempArr = [];
@@ -254,7 +247,7 @@ const expireDate = new Date(sevenDaysLater);
           deviceToken,
         });
 
-        user.cronJobs.push( cronModel.cronJobId);
+        user.cronJobs.push(cronModel.cronJobId);
         const cronJob = await cronJobModel.create(cronModel);
       });
     }
@@ -278,9 +271,8 @@ const expireDate = new Date(sevenDaysLater);
           deviceToken,
         });
 
-        user.cronJobs.push( cronModel.cronJobId);
+        user.cronJobs.push(cronModel.cronJobId);
         const cronJob = await cronJobModel.create(cronModel);
-
       });
     }
 
@@ -303,16 +295,14 @@ const expireDate = new Date(sevenDaysLater);
           task: cronModel.tasks,
           deviceToken,
         });
-      
-        user.cronJobs.push( cronModel.cronJobId);
-        const cronJob = await cronJobModel.create(cronModel);
 
-    })
-  }
+        user.cronJobs.push(cronModel.cronJobId);
+        const cronJob = await cronJobModel.create(cronModel);
+      });
+    }
 
     user.prescriptions.push(prescription?._id);
     await user.save();
-
 
     const notificationMessage = "New Prescriptions Added ";
 
@@ -346,10 +336,6 @@ const expireDate = new Date(sevenDaysLater);
     });
   }
 };
-
-
-
-
 
 routes.prescriptionSuggestion = async (req, res) => {
   try {
